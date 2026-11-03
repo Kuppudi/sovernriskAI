@@ -1,0 +1,2 @@
+# Tested dependency set; ML extras remain opt-in.
+-r requirements.lock
