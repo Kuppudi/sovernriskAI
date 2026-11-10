@@ -41,6 +41,8 @@ Reports and CSV formatting have their own files: `services/reports.py` and `serv
 
 ## Importing official data
 
+For a guided World Bank-only lesson, open `notebooks/data_extract.ipynb`. Markdown explains each stage before its code: raw extraction, validation, coverage, cleaned tables, incremental refreshes, immutable exports, and optional database loading. Read `notebooks/README.md` for setup. Default execution saves files without reading a database URL. The database preview and load are separate opt-in cells.
+
 1. `ingestion/cli.py` reads the command-line options.
 2. `ingestion/pipelines/world_bank.py` shows the import steps in order and records success or failure.
 3. `ingestion/pipelines/world_bank_data.py` downloads and validates country, indicator, and observation records.

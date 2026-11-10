@@ -2,7 +2,17 @@
 
 Delivery uses separate feature branches, each pushed and checked before merging to `main`. The user reports the existing app is running in Azure after manual Quick Deploy, private PostgreSQL configuration, and a 396-row World Bank import. The agent has not independently verified that Azure deployment or provisioned cloud resources.
 
-## Latest feature · ADB ingestion
+## Latest feature · World Bank extraction notebook
+
+`notebooks/data_extract.ipynb` implements the user-approved World Bank-only data-engineering plan, with explanations before code cells. It teaches parameterization, API pagination/retries, source metadata, raw/Bronze archives, validation and missingness, cleaned/Silver observations, country-year/Gold tables, content hashes, atomic file writes, revision overlap, checkpoints, and optional PostgreSQL loading. Default runs are files-only; both database switches are false and saved execution outputs/counts are empty.
+
+The optional load section explains what loading means, previews host/port/database without credentials, then requires a separate explicit load switch. It reuses the extracted dataset and existing atomic snapshot/audit storage. No API fetch is repeated. A failed database load leaves successful file exports available. Notebook dependencies remain outside the App Service package.
+
+Verification: 95 tests passed in the integrated local PostgreSQL suite with the real built frontend present. The isolated notebook worktree previously passed 94 tests with one frontend-artifact skip on both SQLite and PostgreSQL; all 12 notebook tests executed. Actual-kernel World Bank extraction produced 396 rows (391 numeric, 5 null) and 66 country-years while a deliberately invalid database URL remained unused. An actual three-year incremental refresh fetched 108 rows and retained the same 396-row dataset hash. Repeated optional loads produced 24 synthetic observations, one snapshot, and two audits in a disposable PostgreSQL schema, with no additional API fetch.
+
+IMF (`2e0d1d7`) and ADB (`bcf49ee`) were separately pushed, checked by GitHub Backend/Frontend/App Service packaging workflows, and merged to main before notebook delivery. User-controlled Azure Quick Deploy and data imports are still required for these changes. Azure ML notebook execution has not been performed. ML model training and RAG remain separate future features.
+
+## Previous feature · ADB ingestion
 
 Branch `feature/adb-ingestion` adds total international reserves, long-term principal repayments, and long-term interest payments through ADB KIDB SDMX CSV. USD scales are normalized to million US$, legacy economy codes map to ISO3, and unsupported/subnational codes fail validation. Original sources, reference periods, footnotes, and statuses remain in the manifest. Missing catalog descriptions are disclosed; gaps are not filled. Requests stay below the documented 20/minute limit.
 
@@ -67,9 +77,9 @@ The map home page, country selection, exact-year economic values, annual time-se
 
 Only reserved schema/directories and model card exist. No authorized ratings, target, training, calibration, backtesting, SHAP, or inference artifacts. Risk/downgrade API requests return explicit HTTP 503 `MODEL_NOT_TRAINED`; model status returns HTTP 200 unavailable. No arbitrary scores or synthetic production data.
 
-## Milestone 6 · Single-service packaging implemented; Azure deployment pending
+## Milestone 6 · Single-service packaging implemented; deployment reported by user
 
-React/FastAPI shared hosting, startup script, a source ZIP packager, deployment documentation, and a manual OIDC deployment workflow now exist. Actual App Service provisioning/configuration, deployment, Blob storage integration, database managed-identity connection code, and Application Insights remain pending. No paid resources were created.
+React/FastAPI shared hosting, startup script, a source ZIP packager, deployment documentation, and a manual OIDC deployment workflow exist. The user reports a successful manual Quick Deploy, private database connection, and World Bank import. New data features require another manual deployment. Agent verification is local/CI only. Blob storage, database managed-identity authentication, production access control, and monitoring refinements remain future work. The agent has created no paid resources.
 
 ## Verification
 

@@ -1,5 +1,13 @@
 # Architecture decisions
 
+## 2026-11-10 · World Bank data engineering notebook
+
+After approving a section-by-section plan, the user authorized a World Bank-only `notebooks/data_extract.ipynb` for learning data engineering before ML and RAG. Keep readable Python/pandas logic visible in cells and reuse the existing official connector, validators, hashing, and transactional storage. Notebook extras are development dependencies, not App Service dependencies; backend CI installs them to exercise the notebook tests.
+
+Default execution writes versioned raw/Bronze, cleaned/Silver, and country-year/Gold files without reading a database URL. A scope-specific checkpoint advances only after successful publication. Overlapping refreshes replace recent values, including explicit null revisions; preserve earlier immutable versions and archive lineage. Incremental history combines retrieval vintages and does not establish knowledge at the historical prediction date.
+
+Optional PostgreSQL loading requires an environment URL, a credential-free destination preview, and a separate disabled-by-default load switch. Load already-extracted data with existing run audits and atomic/idempotent storage. It neither re-downloads the API nor provisions resources. Azure ML execution and access from its compute to private PostgreSQL require separate user setup and remain unverified.
+
 ## 2026-11-10 · ADB SDMX data
 
 Use KIDB's official country and indicator catalogs and SDMX CSV endpoint. Map legacy provider economy codes to ISO3; reject unsupported countries and subnational areas. Preserve source columns and footnotes, normalize documented USD multipliers to millions, reject duplicates/changed units/forecast statuses, and leave absent years as gaps. Pace every request and retry at least 3.1 seconds apart for the documented 20/minute limit. Reuse the audited additional-source pipeline; no schema change is needed.

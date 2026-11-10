@@ -6,6 +6,8 @@ This repository root is the platform root, without a redundant wrapper directory
 
 For an easy reading path through the implementation, start with [how to read the code](docs/CODE_GUIDE.md).
 
+Start the World Bank data-engineering lesson in [data_extract.ipynb](notebooks/data_extract.ipynb). Its [setup guide](notebooks/README.md) explains the optional dependencies, file outputs, and disabled-by-default PostgreSQL load.
+
 For World Bank, IMF, and ADB import commands and Azure Quick Deploy steps, see [data imports](docs/DATA_IMPORTS.md). This is a noncommercial Azure learning project covering data engineering, later ML training, and then RAG.
 
 ## One App Service for the whole app
