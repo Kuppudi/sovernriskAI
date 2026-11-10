@@ -1,5 +1,13 @@
 # Architecture decisions
 
+## 2026-11-10 · Additional official data sources
+
+Keep separate provider parsers and share only HTTP retries, storage, and run auditing. Register country metadata through the existing World Bank importer first. Namespace IMF codes by provider and dataset so different series cannot overwrite one another. No schema change is required. The UI reads source names and units from the API rather than assuming every value is World Bank data or a percentage.
+
+IMF DataMapper v2 provides four initial fiscal series from WEO and Fiscal Monitor. Import only completed years before the provider's projection cutoff; fail if that cutoff is unknown. Earlier values can still be estimates. Preserve release metadata and unknown publication dates. Unlike WDI's rectangular response contract, IMF can omit unavailable years; keep those as gaps and require some numeric data for each requested country. The application remains a learning project with untrained models, not a point-in-time default model.
+
+The user now manually deploys the built ZIP with Azure Quick Deploy. GitHub's deployment job can remain skipped; the artifact-build job is sufficient. New provider imports remain explicit commands, not web-startup tasks or scheduled Azure jobs.
+
 ## 2026-11-03 · Modular monorepo
 
 Use the supplied repository root as the platform root. `backend/app` owns API/configuration/persistence; `ingestion` owns source connectors/validation/jobs; `frontend` owns the UI; `ml` is reserved for offline model work. No microservices or redundant wrapper directory. Synchronous SQLAlchemy sessions keep transactions straightforward; HTTPX handles asynchronous source I/O in the ingestion command. API queries run in FastAPI worker threads.

@@ -6,11 +6,9 @@ from typing import Any
 
 import httpx
 
+from ingestion.connectors.http import SourceError
+
 logger = logging.getLogger("sovereign.ingestion")
-
-
-class SourceError(RuntimeError):
-    pass
 
 
 class WorldBankClient:

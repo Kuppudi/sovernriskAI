@@ -5,7 +5,7 @@ import {
   getIndicatorLabel,
 } from '../services/indicatorLabels'
 import type { MapPlace } from '../services/mapData'
-import type { MapCountry } from '../types/api'
+import type { Indicator, MapCountry } from '../types/api'
 import { TrendChart } from './TrendChart'
 import { ErrorState, formatDate, Icon, Loading } from './UI'
 
@@ -13,6 +13,9 @@ interface CountryPreviewProps {
   place: MapPlace | null
   country: MapCountry | undefined
   indicator: string
+  metadata?: Indicator
+  sourceName?: string
+  sourceUrl?: string
   year: number
 }
 
@@ -20,10 +23,13 @@ export function CountryPreview({
   place,
   country,
   indicator,
+  metadata,
+  sourceName,
+  sourceUrl,
   year,
 }: CountryPreviewProps) {
   const history = useObservations(country?.iso3 || '', `indicator=${indicator}`)
-  const label = getIndicatorLabel(indicator)
+  const label = getIndicatorLabel(indicator, metadata)
 
   if (!place) {
     return (
@@ -49,7 +55,7 @@ export function CountryPreview({
       </div>
       <div className="preview-value">
         <strong>
-          {formatIndicatorValue(country?.value ?? null, indicator)}
+          {formatIndicatorValue(country?.value ?? null, indicator, metadata?.unit)}
         </strong>
         <span>
           {label.name} · {year}
@@ -80,7 +86,8 @@ export function CountryPreview({
           </Link>
           <details className="preview-source">
             <summary>Source</summary>
-            <p>World Bank WDI</p>
+            <p>{sourceUrl ? <a href={sourceUrl} target="_blank" rel="noreferrer">{sourceName}</a> : sourceName}</p>
+            {metadata?.code.startsWith('IMF.') && <p>Historical values may include estimates.</p>}
             <p>
               Observation year: {country.observation_year || 'Not reported'}
             </p>

@@ -47,6 +47,8 @@ def save_indicators(db: Session, records: list[dict], source_id: int) -> dict[st
             indicator = Indicator(**record, source_id=source_id)
             db.add(indicator)
         else:
+            if indicator.source_id != source_id:
+                raise ValueError("Indicator code belongs to a different source")
             for field, value in record.items():
                 setattr(indicator, field, value)
 
@@ -96,6 +98,7 @@ def save_dataset(
             "end_year": dataset["end_year"],
             "records": len(dataset["observations"]),
             "indicators": dataset["indicators"],
+            "provider_metadata": dataset.get("provider_metadata", {}),
         },
     )
     db.add(snapshot)

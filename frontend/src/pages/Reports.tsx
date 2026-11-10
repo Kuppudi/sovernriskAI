@@ -90,7 +90,7 @@ export function Reports() {
               ))}
             </ul>
             <p className="definition">
-              Each observation links to the World Bank and includes its
+              Each observation links to its provider and includes its
               observation year and retrieval date. Public API responses also
               include the dataset version and source revision date, when
               provided.

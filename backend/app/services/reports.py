@@ -14,9 +14,9 @@ from backend.app.services.observations import (
 
 REPORT_LIMITATIONS = [
     "Deterministic economic summary, not a credit rating or investment recommendation.",
-    "Governance, CPI corruption, debt, fiscal balance, and reserves connectors are not implemented.",
+    "Governance and default-outcome datasets are not implemented. IMF fiscal indicators appear only after their import runs.",
     "Indicators may have different latest years. Latest available non-null values are shown; later missing values are not estimates.",
-    "WDI does not provide per-observation first-publication dates here. Retrieval vintages cannot establish historical availability.",
+    "First-publication dates are not supplied here. IMF historical values can include estimates. Retrieval vintages cannot establish historical availability.",
 ]
 
 

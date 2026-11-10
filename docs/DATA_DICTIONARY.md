@@ -1,6 +1,6 @@
 # Data dictionary
 
-Names/definitions come from the provider; curated mappings live in `ingestion/indicators.py`.
+Names/definitions come from the provider. WDI mappings live in `ingestion/indicators.py`; IMF mappings live in `ingestion/connectors/imf.py`. New provider codes are namespaced; WDI codes are unchanged. See [data imports](DATA_IMPORTS.md) for the IMF series table.
 
 | Code | Meaning | Unit |
 |---|---|---|

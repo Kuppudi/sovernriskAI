@@ -13,6 +13,7 @@ interface WorldMapProps {
   shapes: WorldShapes
   countries: { iso3: string; value: number | null }[]
   indicator: string
+  unit?: string
   year: number
   selectedCountry: string | null
   onSelectCountry: (country: MapPlace) => void
@@ -23,6 +24,7 @@ export function WorldMap({
   shapes,
   countries,
   indicator,
+  unit,
   year,
   selectedCountry,
   onSelectCountry,
@@ -36,7 +38,7 @@ export function WorldMap({
 
   function valueLabel(value: number | null) {
     if (mode === 'risk') return 'Score unavailable'
-    return formatIndicatorValue(value, indicator)
+    return formatIndicatorValue(value, indicator, unit)
   }
 
   // Country outlines are static. Recalculate their SVG paths only when the shapes change.
@@ -121,8 +123,8 @@ export function WorldMap({
               ))}
             </div>
             <div className="legend-values">
-              <span>{formatIndicatorValue(range.minimum, indicator)}</span>
-              <span>{formatIndicatorValue(range.maximum, indicator)}</span>
+              <span>{formatIndicatorValue(range.minimum, indicator, unit)}</span>
+              <span>{formatIndicatorValue(range.maximum, indicator, unit)}</span>
             </div>
           </div>
         ) : (

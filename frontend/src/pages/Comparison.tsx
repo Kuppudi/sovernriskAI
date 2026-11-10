@@ -91,7 +91,7 @@ export function Comparison() {
                   indicators.data?.find((item) => item.code === indicator)
                     ?.name || 'Historical comparison'
                 }
-                subtitle="World Bank WDI · annual series"
+                subtitle={comparison.data?.items[0]?.source || 'Annual series'}
               >
                 <TrendChart
                   observations={comparison.data?.items || []}

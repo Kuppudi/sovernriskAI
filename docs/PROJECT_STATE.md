@@ -1,6 +1,14 @@
 # Project state · 2026-11-10
 
-Delivery uses separate feature branches, each pushed and checked before merging to `main`. No cloud deployment or paid Azure resources.
+Delivery uses separate feature branches, each pushed and checked before merging to `main`. The user reports the existing app is running in Azure after manual Quick Deploy, private PostgreSQL configuration, and a 396-row World Bank import. The agent has not independently verified that Azure deployment or provisioned cloud resources.
+
+## Latest feature · IMF ingestion
+
+Branch `feature/imf-ingestion` adds four fiscal indicators from IMF DataMapper v2: WEO debt and overall balance, plus Fiscal Monitor primary balance and revenue. All use percent of GDP. IMF codes and original metadata remain separate from WDI. Unknown cutoffs, projection years, changed datasets/units, invalid values, and empty country scopes fail; earlier estimates and missing history remain explicitly disclosed. Country registration is reused from World Bank.
+
+Shared `storage.py` and `runs.py` retain atomic writes, raw archives, immutable revisions, and import audits. The frontend uses actual provider attribution and units in the indicator map, country preview, comparison, and reports. Existing World Bank CLI commands remain compatible. No schema migration, new paid resource, training, or RAG is added.
+
+Local evidence: 68 tests passed on PostgreSQL 17.11; frontend TypeScript/Vite production build passed. A live official IMF import added 264 observations for the existing six countries over 2015–2025, snapshot `b31850e3158a57314bb73478ccea6802920f481e2069ee8abe36cdf167a7da3e`. New data is local only; Azure still needs the new package and import command. See `DATA_IMPORTS.md`.
 
 ## Latest feature · single App Service
 

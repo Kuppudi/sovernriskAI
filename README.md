@@ -6,6 +6,8 @@ This repository root is the platform root, without a redundant wrapper directory
 
 For an easy reading path through the implementation, start with [how to read the code](docs/CODE_GUIDE.md).
 
+For World Bank and IMF import commands and Azure Quick Deploy steps, see [data imports](docs/DATA_IMPORTS.md). This is a noncommercial Azure learning project covering data engineering, later ML training, and then RAG.
+
 ## One App Service for the whole app
 
 FastAPI now serves both the API and the built React frontend. Azure needs one Linux Python App Service, plus a separate PostgreSQL database. A Static Web App is not required.

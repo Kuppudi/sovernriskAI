@@ -40,13 +40,21 @@ const labels: Record<string, IndicatorLabel> = {
   },
 }
 
-export function getIndicatorLabel(code: string): IndicatorLabel {
-  return labels[code] || { name: code, description: '', unit: '' }
+export function getIndicatorLabel(
+  code: string,
+  metadata?: { name: string; definition: string; unit: string },
+): IndicatorLabel {
+  return labels[code] || {
+    name: metadata?.name || code,
+    description: metadata?.definition || '',
+    unit: metadata?.unit || '',
+  }
 }
 
 export function formatIndicatorValue(
   value: number | null,
   indicator: string,
+  unit?: string,
 ): string {
   if (value === null) return 'No data'
 
@@ -54,5 +62,7 @@ export function formatIndicatorValue(
     maximumFractionDigits: 2,
   })
   if (indicator === 'NY.GDP.PCAP.CD') return `$${formatted}`
-  return `${formatted}%`
+  const displayUnit = unit || getIndicatorLabel(indicator).unit
+  if (displayUnit.includes('%') || /percent/i.test(displayUnit)) return `${formatted}%`
+  return displayUnit ? `${formatted} ${displayUnit}` : formatted
 }

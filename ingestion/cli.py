@@ -11,6 +11,8 @@ from backend.app.core.config import get_settings
 from backend.app.core.logging import configure_logging
 from backend.app.db.session import get_engine
 from ingestion.connectors.world_bank import WorldBankClient
+from ingestion.connectors.imf import ImfClient
+from ingestion.pipelines.additional_sources import ingest_source
 from ingestion.pipelines.world_bank import ingest_world_bank
 
 
@@ -20,9 +22,15 @@ async def run(args) -> None:
         headers={"User-Agent": "SovereignRiskPlatform/0.1 (economic research)"}
     ) as client:
         with Session(get_engine()) as db:
-            result = await ingest_world_bank(
+            if args.source == "world-bank":
+                connector = WorldBankClient(client, settings.world_bank_base_url)
+                import_data = ingest_world_bank
+            else:
+                connector = ImfClient(client)
+                import_data = ingest_source
+            result = await import_data(
                 db,
-                WorldBankClient(client, settings.world_bank_base_url),
+                connector,
                 args.countries,
                 args.start_year,
                 args.end_year,
@@ -35,8 +43,9 @@ async def run(args) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Ingest official World Bank WDI observations, without fabricated values"
+        description="Import official economic data, preserving sources and revisions"
     )
+    parser.add_argument("--source", choices=["world-bank", "imf"], default="world-bank")
     parser.add_argument(
         "--countries", nargs="+", default=["USA", "IND", "BRA", "DEU", "JPN", "ZAF"]
     )

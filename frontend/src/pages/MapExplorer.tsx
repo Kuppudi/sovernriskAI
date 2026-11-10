@@ -48,7 +48,8 @@ export function MapExplorer() {
   const selectedCountry = mapData.data?.countries.find(
     (country) => country.iso3 === selectedPlace?.iso3,
   )
-  const label = getIndicatorLabel(indicator)
+  const selectedIndicator = indicators.data?.find((item) => item.code === indicator)
+  const label = getIndicatorLabel(indicator, selectedIndicator)
 
   // Economic values are used only in the indicator view. They are never risk scores.
   const riskCountries = importedCountries.map((country) => ({
@@ -114,7 +115,7 @@ export function MapExplorer() {
               >
                 {indicators.data?.map((item) => (
                   <option key={item.code} value={item.code}>
-                    {getIndicatorLabel(item.code).name}
+                    {getIndicatorLabel(item.code, item).name}
                   </option>
                 ))}
               </select>
@@ -163,6 +164,7 @@ export function MapExplorer() {
               shapes={shapes.data!}
               countries={mapCountries}
               indicator={indicator}
+              unit={selectedIndicator?.unit}
               year={year}
               selectedCountry={selectedPlace?.iso3 || null}
               onSelectCountry={setSelectedPlace}
@@ -170,7 +172,7 @@ export function MapExplorer() {
             />
             <div className="map-source-line">
               <span>{importedCountries.length} countries loaded</span>
-              <span>{showIndicators ? 'World Bank' : 'ML risk'}</span>
+              <span>{showIndicators ? mapData.data?.source_name : 'ML risk'}</span>
             </div>
           </section>
           {showIndicators ? (
@@ -178,6 +180,9 @@ export function MapExplorer() {
               place={selectedPlace}
               country={selectedCountry}
               indicator={indicator}
+              metadata={selectedIndicator}
+              sourceName={mapData.data?.source_name}
+              sourceUrl={mapData.data?.source_url}
               year={year}
             />
           ) : (
