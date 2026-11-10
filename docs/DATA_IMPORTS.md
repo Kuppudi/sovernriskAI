@@ -35,12 +35,34 @@ Missing years remain gaps. Explicit nulls remain null; zero stays zero. Every re
 
 No added API key is needed for this connector. Follow [IMF statistical-data terms](https://www.imf.org/en/About/copyright-and-terms.) and attribute IMF and the named dataset. This project is for noncommercial learning, not LLM training on IMF publications.
 
+## Asian Development Bank
+
+```sh
+python -m ingestion.cli --source adb --countries IND JPN --start-year 2015 --end-year 2025
+```
+
+ADB covers Asia/Pacific economies, not all countries. Of the initial six imported countries, use India and Japan. An unsupported country fails with an explanation; it is never silently skipped. Register other economies with the World Bank command first. The connector maps ADB's country codes to ISO3 explicitly (for example `PHI` to `PHL`). It excludes subnational areas.
+
+| Stored indicator code | Meaning | Unit |
+|---|---|---|
+| `ADB.DF_IL.RAFA_USD_TOT` | Total international reserves | million US$ |
+| `ADB.DF_EXT_DEBT.DT_AMT_DLXF_CD` | Principal repayments on long-term debt | million US$ |
+| `ADB.DF_EXT_DEBT.DT_INT_DLXF_CD` | Interest on long-term debt | million US$ |
+
+The official [KIDB SDMX API](https://kidb.adb.org/api) supplies country/indicator catalogs and CSV data. The connector spaces requests at least 3.1 seconds apart, including retries, to stay under its 20-request/minute limit. Run only one import at a time.
+
+Reported USD multipliers are normalized to millions. Original units, statuses, dataflow version, reference years, footnotes, methodology, and upstream data sources remain in the manifest and raw archive. ADB does not provide detailed descriptions for the two debt series in its catalog; the stored definition discloses that absence. No description is invented.
+
+These are total long-term debt cash flows, not individual loan repayment outcomes. Country/series coverage differs: Japan may have reserves but no external-debt series. Missing years stay absent, explicit missing values stay null, and known forecast or unrecognized observation statuses fail validation. Estimated/provisional history is allowed and identified in source metadata. Annual reference periods can differ across countries. Provider revision dates remain unknown when not supplied.
+
+ADB republishes IMF reserves and World Bank debt data for these series. Keep their provenance, but do not count them as independent evidence or treat correlated series as extra training examples. This small connector prepares data-engineering practice, not a completed global modeling dataset. Follow [KIDB terms](https://kidb.adb.org/terms).
+
 ## Azure Quick Deploy
 
 1. Download the GitHub Actions `app-service` artifact, extract its outer archive, and upload the inner `app-service.zip` to Quick Deploy.
 2. Enable server-side build. Use Python 3.13 and startup command `bash startup.sh`.
 3. After deployment, open a new App Service SSH session. Its existing database URL and VNet connection are reused; no new Azure service or API credential is needed.
-4. Run `cd "$APP_PATH"`, then the IMF command above. Existing World Bank rows already register the six countries. This feature does not change the schema or require a new migration.
+4. Run `cd "$APP_PATH"`, then the IMF and ADB commands above. Existing World Bank rows register the six countries. These features do not change the schema or require a new migration.
 5. Open Indicators and select an IMF series. Check its Source, compare a country, or export CSV. Models remain unavailable.
 
 App Service imports use `RAW_DATA_DIR=/home/sovereignrisk/raw`. Back up archives with the database. Scheduling, Blob storage, expanded country coverage, ML labels, and training are separate features.

@@ -6,7 +6,7 @@ This repository root is the platform root, without a redundant wrapper directory
 
 For an easy reading path through the implementation, start with [how to read the code](docs/CODE_GUIDE.md).
 
-For World Bank and IMF import commands and Azure Quick Deploy steps, see [data imports](docs/DATA_IMPORTS.md). This is a noncommercial Azure learning project covering data engineering, later ML training, and then RAG.
+For World Bank, IMF, and ADB import commands and Azure Quick Deploy steps, see [data imports](docs/DATA_IMPORTS.md). This is a noncommercial Azure learning project covering data engineering, later ML training, and then RAG.
 
 ## One App Service for the whole app
 
@@ -65,6 +65,7 @@ The commands above use Vite for development with automatic browser updates. Open
 - Separate indicator map with country/year controls, exact-year economic values, a numeric legend, and country history. Economic values are never treated as risk scores. Current economic coverage is six imported countries.
 - Responsive navigation, optional source details, data tables, CSV downloads, country comparison, and initial deterministic print-friendly reports.
 - Six WDI indicators: GDP growth, GDP per capita, inflation, exports/GDP, imports/GDP, and current account/GDP.
+- Four IMF fiscal indicators and three ADB reserves/debt-service indicators, each imported separately with source attribution. ADB has regional coverage; imported history can contain estimates and gaps.
 - Country/indicator metadata, pagination, retries for timeouts/429/5xx, finite numeric validation, atomic ingestion, durable run audits, raw response archives, and immutable snapshots.
 - SQLAlchemy models and migrations for countries, indicators, observations, sources, ingestion runs, snapshots, rating events, model versions, and predictions.
 - Explicit `MODEL_NOT_TRAINED` errors from prediction endpoints; no placeholder outputs.
@@ -120,6 +121,6 @@ Each PostgreSQL test creates and removes its own schema. Frontend/backend CI exe
 
 ## Remaining work
 
-Milestones 1–2 are implemented. Initial country dashboard, reporting, comparison, and export flows are usable; broader coverage and full dashboard/reporting QA remain. Governance, debt, fiscal balance, reserves, corruption, authorized ratings, ML training/evaluation/calibration/SHAP/inference, direct server-side PDF rendering, and Azure deployment are incomplete. PDF export currently uses browser print/save-to-PDF.
+The initial dashboard, reports, comparison, exports, and World Bank/IMF/ADB imports are implemented. The user reports deploying the earlier version to Azure; the new importers still need manual deployment. Broader country coverage, governance/default labels, ML training/evaluation, RAG, and full dashboard/reporting QA remain. PDF export uses browser print/save-to-PDF.
 
 The local MVP has no authentication; development services bind to loopback. Production access control, hardening, Blob storage, monitoring, and deployment are later work. No paid resources, RAG, chatbots, AI Search, or Azure OpenAI are included. See [Azure notes](infrastructure/azure/README.md), [data dictionary](docs/DATA_DICTIONARY.md), and [model card](docs/MODEL_CARD.md).

@@ -88,6 +88,7 @@ export function CountryPreview({
             <summary>Source</summary>
             <p>{sourceUrl ? <a href={sourceUrl} target="_blank" rel="noreferrer">{sourceName}</a> : sourceName}</p>
             {metadata?.code.startsWith('IMF.') && <p>Historical values may include estimates.</p>}
+            {metadata?.code.startsWith('ADB.') && <p>Reference periods vary by country.</p>}
             <p>
               Observation year: {country.observation_year || 'Not reported'}
             </p>

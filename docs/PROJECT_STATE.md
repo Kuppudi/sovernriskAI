@@ -2,7 +2,13 @@
 
 Delivery uses separate feature branches, each pushed and checked before merging to `main`. The user reports the existing app is running in Azure after manual Quick Deploy, private PostgreSQL configuration, and a 396-row World Bank import. The agent has not independently verified that Azure deployment or provisioned cloud resources.
 
-## Latest feature · IMF ingestion
+## Latest feature · ADB ingestion
+
+Branch `feature/adb-ingestion` adds total international reserves, long-term principal repayments, and long-term interest payments through ADB KIDB SDMX CSV. USD scales are normalized to million US$, legacy economy codes map to ISO3, and unsupported/subnational codes fail validation. Original sources, reference periods, footnotes, and statuses remain in the manifest. Missing catalog descriptions are disclosed; gaps are not filled. Requests stay below the documented 20/minute limit.
+
+Local evidence: 83 tests passed on PostgreSQL 17.11 and the frontend production build passed. Official ADB import for India/Japan, 2015–2025, added 44 numeric observations: 22 reserve values and 11 each of the debt cash-flow series (India only). Snapshot `b31175f719c7e0b37d09b15316e5b0b61eeab63c570132cd8cf302e7b2f05c3b`. Local stored observations now total 704, including WDI and IMF. Azure needs the new package and CLI commands; no schema change or added service is required.
+
+## Previous feature · IMF ingestion
 
 Branch `feature/imf-ingestion` adds four fiscal indicators from IMF DataMapper v2: WEO debt and overall balance, plus Fiscal Monitor primary balance and revenue. All use percent of GDP. IMF codes and original metadata remain separate from WDI. Unknown cutoffs, projection years, changed datasets/units, invalid values, and empty country scopes fail; earlier estimates and missing history remain explicitly disclosed. Country registration is reused from World Bank.
 

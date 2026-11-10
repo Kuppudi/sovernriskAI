@@ -2,6 +2,8 @@
 
 Names/definitions come from the provider. WDI mappings live in `ingestion/indicators.py`; IMF mappings live in `ingestion/connectors/imf.py`. New provider codes are namespaced; WDI codes are unchanged. See [data imports](DATA_IMPORTS.md) for the IMF series table.
 
+ADB mappings live in `ingestion/connectors/adb.py`. Its three series use million US$, with original USD multipliers and per-row source/reference/status metadata preserved. Missing detailed catalog descriptions are explicitly disclosed. ADB and IMF omit unavailable years, so gaps are retained rather than requiring WDI's rectangular response contract.
+
 | Code | Meaning | Unit |
 |---|---|---|
 | `NY.GDP.MKTP.KD.ZG` | GDP growth | annual % |

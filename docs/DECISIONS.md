@@ -1,5 +1,11 @@
 # Architecture decisions
 
+## 2026-11-10 · ADB SDMX data
+
+Use KIDB's official country and indicator catalogs and SDMX CSV endpoint. Map legacy provider economy codes to ISO3; reject unsupported countries and subnational areas. Preserve source columns and footnotes, normalize documented USD multipliers to millions, reject duplicates/changed units/forecast statuses, and leave absent years as gaps. Pace every request and retry at least 3.1 seconds apart for the documented 20/minute limit. Reuse the audited additional-source pipeline; no schema change is needed.
+
+The initial series are total international reserves, long-term principal repayments, and long-term interest payments. Two debt descriptions are missing upstream; disclose missing metadata instead of inventing it. ADB republishes other organizations' data and has varying country coverage/reference periods. Keep provenance and avoid treating duplicate measurements as independent predictors. The user is learning data engineering and Azure, not deploying a validated credit model.
+
 ## 2026-11-10 · Additional official data sources
 
 Keep separate provider parsers and share only HTTP retries, storage, and run auditing. Register country metadata through the existing World Bank importer first. Namespace IMF codes by provider and dataset so different series cannot overwrite one another. No schema change is required. The UI reads source names and units from the API rather than assuming every value is World Bank data or a percentage.

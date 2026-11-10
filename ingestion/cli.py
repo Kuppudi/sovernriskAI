@@ -12,6 +12,8 @@ from backend.app.core.logging import configure_logging
 from backend.app.db.session import get_engine
 from ingestion.connectors.world_bank import WorldBankClient
 from ingestion.connectors.imf import ImfClient
+from ingestion.connectors.adb import AdbClient
+from ingestion.connectors.http import SourceError
 from ingestion.pipelines.additional_sources import ingest_source
 from ingestion.pipelines.world_bank import ingest_world_bank
 
@@ -25,8 +27,11 @@ async def run(args) -> None:
             if args.source == "world-bank":
                 connector = WorldBankClient(client, settings.world_bank_base_url)
                 import_data = ingest_world_bank
-            else:
+            elif args.source == "imf":
                 connector = ImfClient(client)
+                import_data = ingest_source
+            else:
+                connector = AdbClient(client)
                 import_data = ingest_source
             result = await import_data(
                 db,
@@ -45,7 +50,9 @@ def main() -> None:
     parser = argparse.ArgumentParser(
         description="Import official economic data, preserving sources and revisions"
     )
-    parser.add_argument("--source", choices=["world-bank", "imf"], default="world-bank")
+    parser.add_argument(
+        "--source", choices=["world-bank", "imf", "adb"], default="world-bank"
+    )
     parser.add_argument(
         "--countries", nargs="+", default=["USA", "IND", "BRA", "DEU", "JPN", "ZAF"]
     )
@@ -55,6 +62,9 @@ def main() -> None:
     args = parser.parse_args()
     try:
         asyncio.run(run(args))
+    except SourceError as exc:
+        # Connector errors contain curated explanations, never database credentials.
+        parser.exit(1, f"Ingestion failed: {exc}\n")
     except Exception as exc:
         # Do not print database URLs or library tracebacks containing secrets.
         parser.exit(

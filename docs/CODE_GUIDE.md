@@ -49,6 +49,8 @@ Reports and CSV formatting have their own files: `services/reports.py` and `serv
 
 For IMF, `connectors/imf.py` downloads and validates four fiscal series. `pipelines/additional_sources.py` reuses country metadata registered by World Bank. `connectors/http.py` handles requests and retries; the provider file owns the data format and meaning. See `DATA_IMPORTS.md` for runnable commands.
 
+For ADB, `connectors/adb.py` resolves provider country codes and downloads catalogs/data. `connectors/adb_rows.py` validates CSV rows and converts USD scales to millions. Original statuses, sources, reference years, and footnotes remain in the snapshot manifest.
+
 The import saves one audit record before doing the work. It commits the actual dataset only after validation and storage succeed. A failed import keeps its failure record but does not leave half a dataset in the database.
 
 ## Three rules that matter
