@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { useCountries, useIndicators, useObservations } from '../hooks/useData'
-import { apiUrl } from '../services/api'
 import {
   CountrySelect,
   Empty,
@@ -41,9 +40,7 @@ export function Explorer() {
           country && valid ? (
             <a
               className="button secondary"
-              href={apiUrl(
-                `/api/countries/${country}/indicators.csv?${params}`,
-              )}
+              href={`/api/countries/${country}/indicators.csv?${params}`}
               download
             >
               <Icon name="download" />

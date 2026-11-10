@@ -6,6 +6,29 @@ This repository root is the platform root, without a redundant wrapper directory
 
 For an easy reading path through the implementation, start with [how to read the code](docs/CODE_GUIDE.md).
 
+## One App Service for the whole app
+
+FastAPI now serves both the API and the built React frontend. Azure needs one Linux Python App Service, plus a separate PostgreSQL database. A Static Web App is not required.
+
+After installing the Python dependencies and configuring the database below, run:
+
+```sh
+npm --prefix frontend ci
+npm --prefix frontend run build
+source .venv/bin/activate
+bash startup.sh
+```
+
+Open [the complete app](http://127.0.0.1:8000). Pages, JavaScript, the map, API calls, and CSV downloads all use port 8000. Direct links such as `/countries/IND` also work after refreshing.
+
+To create the deployment file:
+
+```sh
+python scripts/package_app_service.py
+```
+
+This writes `dist/app-service.zip`, containing the frontend build, backend, ingestion code, migrations, requirements, and startup script. Local credentials, raw data, tests, dependencies, and Git metadata are excluded. Follow the [App Service deployment steps](infrastructure/azure/README.md) for Azure settings and the optional manual GitHub deployment workflow. Creating the ZIP does not deploy anything.
+
 ## Local setup
 
 Requires Python 3.12+ (3.13 recommended), Node 22.12+ or 24 LTS, and Docker with Compose. Execute from the repository root:
@@ -30,7 +53,7 @@ npm ci
 npm run dev
 ```
 
-Open [the dashboard](http://127.0.0.1:5173), [API documentation](http://127.0.0.1:8000/docs), or [database health](http://127.0.0.1:8000/health). Vite proxies `/api` and `/health` to FastAPI. Schema changes use Alembic, never automatic table creation on startup. An empty migrated database is supported.
+The commands above use Vite for development with automatic browser updates. Open [the development dashboard](http://127.0.0.1:5173), [API documentation](http://127.0.0.1:8000/docs), or [database health](http://127.0.0.1:8000/health). Production uses only the Python server, as described earlier. Schema changes use Alembic, never automatic table creation on startup. An empty migrated database is supported.
 
 **This verification checkout:** Docker was absent, so an ignored project-local PostgreSQL runtime on port 55432 was used. The current ignored `.env` targets that runtime. For the Docker setup above, copy `.env.example` first. To reuse the downloaded runtime and existing official data, follow [local verification startup](docs/LOCAL_VERIFICATION.md).
 
@@ -91,7 +114,7 @@ Tests use isolated, explicitly synthetic SQLite fixtures by default. To test Pos
 TEST_DATABASE_URL='postgresql+psycopg://sovereign:local_dev_only@localhost:5432/sovereign_risk' python -m pytest -q
 ```
 
-Each PostgreSQL test creates and removes its own schema. Separate frontend/backend CI workflows exercise production builds, tests, and PostgreSQL migration upgrade/downgrade. Features are pushed, checked, and merged into main one at a time. Python versions are locked in `requirements.lock`; frontend versions in `frontend/package-lock.json`. Future ML dependencies are optional (`.[ml]`) and excluded from API startup.
+Each PostgreSQL test creates and removes its own schema. Frontend/backend CI exercise builds, tests, and migrations. App Service CI also checks shared hosting, builds the deployment ZIP, and verifies the real app from an extracted copy. Its deployment job runs only when manually requested from main. Features are pushed, checked, and merged into main one at a time. Python versions are locked in `requirements.lock`; frontend versions in `frontend/package-lock.json`. Future ML dependencies are optional (`.[ml]`) and excluded from API startup.
 
 ## Remaining work
 

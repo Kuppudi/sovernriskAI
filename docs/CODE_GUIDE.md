@@ -16,6 +16,17 @@ Start with one user action: **select a country and inspect its ML risk status**.
 
 Country outlines are stored locally in `frontend/public/maps/world-countries.json`. This file contains geography only. It does not contain economic values.
 
+## One server in production
+
+1. `npm run build` in `frontend/` creates the HTML, JavaScript, CSS, and map files in `frontend/dist/`.
+2. `startup.sh` checks that this build exists and starts the Python server.
+3. `backend/app/main.py` registers the API first, then calls `add_frontend_routes`.
+4. `backend/app/frontend.py` serves assets and the React page for the known frontend URLs. Missing API URLs and files remain 404s; they do not accidentally return HTML. When adding a new React page, add its URL here too.
+5. `scripts/package_app_service.py` puts only the files needed by the app into `dist/app-service.zip`.
+6. `.github/workflows/app-service.yml` builds and tests that ZIP. Only a manual run from main can deploy it to an existing Azure App Service.
+
+No Node server is needed in production, and frontend requests use the same URL as the Python API. Migrations and ingestion are separate commands, not startup tasks.
+
 ## Backend
 
 The frontend asks `GET /api/data/map?indicator=NY.GDP.MKTP.KD.ZG&year=2025` for values.

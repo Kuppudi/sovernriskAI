@@ -39,3 +39,15 @@ Favor descriptive names, direct loops, and functions with one task. Split downlo
 The user clarified that the main purpose is sovereign lending/repayment-risk analysis for development-finance institutions, other lenders, and insurers. Use the app name SovereignRisk AI and main headline Sovereign Credit Risk. Remove marketing copy and instructional paragraphs from the first page. Default to ML risk assessment, with a separate Indicators view. An economic growth or inflation value must never color a risk map or populate the risk score card. Until validated models exist, show a dash and a concise Not trained/Unavailable state. Keep detailed limitations in an expandable section; do not relabel downgrade probability as repayment probability.
 
 The user authorized GitHub delivery feature by feature: frontend first, then backend foundation, then ingestion/integration. Each feature gets its own branch, local validation, push, CI verification, and main merge before the next starts. Do not publish all local work as one oversized change. Paid Azure provisioning remains unauthorized.
+
+## 2026-11-10 · One App Service for React and FastAPI
+
+The user authorized converting the code so the whole application runs in one Azure App Service. This supersedes the earlier Static Web Apps frontend architecture. PostgreSQL remains a separate database service; no paid resources are provisioned by the conversion.
+
+Build React once with Vite, then serve its output from FastAPI. Register API routes first. Explicitly register the known React page URLs so saved links and browser refreshes return index.html, while unknown API paths, unknown pages, and missing assets retain real 404 responses. The frontend uses relative requests and CSV URLs; it needs no external API origin. Keep the optional Vite development server for local editing only.
+
+Use a short startup script and an allowlisted ZIP packager. The ZIP includes source, migrations, requirements, and the compiled frontend, excluding credentials, local datasets, dependencies, and Git metadata. Fail packaging if the frontend is incomplete. CI also extracts a real package and verifies the HTML, assets, deep links, and API in a fresh Python process.
+
+Replace the generated Static Web Apps workflow with an App Service build/package workflow. Pushes validate and upload an artifact only. An explicit manual run from main can deploy to an existing App Service using GitHub environment-scoped OIDC. The user controls resource setup, database configuration, and that deployment action. Migrations and ingestion stay separate from web-process startup.
+
+The next ML feature should use `.ipynb` training notebooks for Azure Machine Learning. App Service will load exported validated model artifacts. RAG remains a later feature after model training and evaluation.

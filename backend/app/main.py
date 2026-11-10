@@ -2,15 +2,17 @@ import logging
 import time
 from uuid import uuid4
 
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from sqlalchemy.exc import SQLAlchemyError
+from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from backend.app.api.routes import router
 from backend.app.core.config import get_settings
 from backend.app.core.logging import configure_logging
+from backend.app.frontend import add_frontend_routes
 
 configure_logging()
 logger = logging.getLogger("sovereign.api")
@@ -28,8 +30,8 @@ app.add_middleware(
 )
 
 
-@app.exception_handler(HTTPException)
-async def http_error(request: Request, exc: HTTPException):
+@app.exception_handler(StarletteHTTPException)
+async def http_error(request: Request, exc: StarletteHTTPException):
     detail = (
         exc.detail
         if isinstance(exc.detail, dict)
@@ -103,3 +105,4 @@ async def request_log(request: Request, call_next):
 
 
 app.include_router(router)
+add_frontend_routes(app, get_settings().frontend_dir)

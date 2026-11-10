@@ -1,6 +1,18 @@
-# Project state · 2026-11-03
+# Project state · 2026-11-10
 
 Delivery uses separate feature branches, each pushed and checked before merging to `main`. No cloud deployment or paid Azure resources.
+
+## Latest feature · single App Service
+
+The conversion branch is `feature/single-app-service`, based on refreshed main `5d7f92c` (including the user's generated Static Web Apps workflow). React's compiled frontend and FastAPI now share one Python server and one URL. API requests and CSV exports are relative; no separate frontend/API origin is needed.
+
+`backend/app/frontend.py` contains the small frontend-serving function. Known React URLs return index.html so direct links and refreshes work. `/api`, `/docs`, assets, and map files retain their own routes; missing API routes/assets stay 404s. Backend development still runs without a built frontend, while `startup.sh` refuses an incomplete production deployment.
+
+`scripts/package_app_service.py` creates `dist/app-service.zip` with app code, migrations, requirements, the startup script, and built frontend. It excludes local data, credentials, node_modules, caches, and tests. The generated Static Web Apps workflow is removed; the new App Service workflow builds/packages on pushes and deploys only on an explicit manual run from main. No Azure resource, secret, or existing Static Web App is modified by this code change.
+
+Local validation: 56 tests passed on SQLite and PostgreSQL 17.11, including shared hosting, direct links, missing assets/API routes, packaging exclusions, missing build rejection, and a fresh-process smoke test from an extracted real deployment ZIP. Production TypeScript/Vite build and shell syntax check passed; Alembic found no schema drift. The browser verified the whole app on Python port 8000, indicator history, country/report refreshes, and same-origin CSV links, with no console errors or warnings. No Vite server was running. Azure deployment remains unverified until the user configures an existing App Service and manually deploys. See `infrastructure/azure/README.md` for exact settings and steps.
+
+The user requested ML training in `.ipynb` notebooks as the next separate feature, followed by RAG. No notebook or new ML training code is claimed by this hosting conversion; models remain explicitly unavailable.
 
 ## Current interface
 
@@ -41,13 +53,13 @@ The map home page, country selection, exact-year economic values, annual time-se
 
 Only reserved schema/directories and model card exist. No authorized ratings, target, training, calibration, backtesting, SHAP, or inference artifacts. Risk/downgrade API requests return explicit HTTP 503 `MODEL_NOT_TRAINED`; model status returns HTTP 200 unavailable. No arbitrary scores or synthetic production data.
 
-## Milestone 6 · Preparation only
+## Milestone 6 · Single-service packaging implemented; Azure deployment pending
 
-Azure architecture/startup/configuration notes and validation CI exist. Resource definitions, deployment workflows, Blob storage integration, managed identity/Key Vault integration, Application Insights, and actual deployment remain unimplemented. No paid resources were created.
+React/FastAPI shared hosting, startup script, a source ZIP packager, deployment documentation, and a manual OIDC deployment workflow now exist. Actual App Service provisioning/configuration, deployment, Blob storage integration, database managed-identity connection code, and Application Insights remain pending. No paid resources were created.
 
 ## Verification
 
-- Final full suite: **35 passed on SQLite and 35 passed on PostgreSQL 17.11**, including map exact-year/missing/zero/revision behavior, idempotency, failure atomicity, null/zero validation, provider pagination/retries/errors, year/indicator filters, source revisions/reversions, snapshot queries, CSV, reports, comparison, CORS, and unavailable predictions.
+- Foundation suite (Nov 3): **35 passed on SQLite and PostgreSQL 17.11**. The Nov 10 App Service suite expands this to **56 passing tests** on both databases, adding frontend routing and deployment-package verification.
 - Strict TypeScript and final production frontend build: passed without bundle-size warnings after separating framework/chart chunks.
 - PostgreSQL migration upgrade and final `alembic check`: passed; no drift. SQLite migration upgrade/downgrade/schema equivalence test passed. GitHub CI also passed a PostgreSQL downgrade/upgrade cycle on the backend feature branch.
 - Python dependency consistency check: passed.

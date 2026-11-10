@@ -13,6 +13,7 @@ class Settings(BaseSettings):
     cors_origins: list[str] = ["http://localhost:5173", "http://127.0.0.1:5173"]
     world_bank_base_url: str = "https://api.worldbank.org/v2"
     raw_data_dir: Path = Path("data/raw")
+    frontend_dir: Path = Path(__file__).resolve().parents[3] / "frontend" / "dist"
 
 
 @lru_cache

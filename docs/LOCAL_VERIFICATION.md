@@ -11,7 +11,7 @@ source .venv/bin/activate
 python -m uvicorn backend.app.main:app --reload --host 127.0.0.1 --port 8000
 ```
 
-In another terminal, from `frontend/`, run `npm run dev`. The original official observations and archived responses remain under `data/`; no re-import is necessary to browse them. If this runtime is already running, do not start a second instance. `pg_ctl -D data/postgres-local status` checks it.
+With `frontend/dist` built, the complete app is served at `http://127.0.0.1:8000`; a Vite server is not required. To check the production startup script instead, run `bash startup.sh` from the activated environment. The original official observations and archived responses remain under `data/`; no re-import is necessary. If PostgreSQL is already running, do not start a second instance. `pg_ctl -D data/postgres-local status` checks it.
 
 To run the PostgreSQL suite with this runtime:
 

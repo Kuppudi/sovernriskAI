@@ -13,11 +13,13 @@ npm ci
 npm run dev
 ```
 
-Open `http://127.0.0.1:5173`. The development server expects a FastAPI backend at `http://127.0.0.1:8000`. Set `API_PROXY_TARGET` in the repository-root `.env` to change it. For a production build, set `VITE_API_BASE_URL` to the API origin.
+Open `http://127.0.0.1:5173`. The development server expects a FastAPI backend at `http://127.0.0.1:8000`. Set `API_PROXY_TARGET` in the repository-root `.env` to change the development proxy.
 
 ```sh
 npm run build
-npm run preview
+cd ..
+source .venv/bin/activate
+bash startup.sh
 ```
 
 ## Files
@@ -29,4 +31,4 @@ npm run preview
 - `src/hooks/useData.ts`: API queries.
 - `src/services/`: requests, labels, and map helpers.
 
-Country outlines are bundled locally; their source is documented in `public/maps/README.md`. The backend is delivered separately from this frontend feature.
+The production app opens at `http://127.0.0.1:8000`. FastAPI serves `frontend/dist` and the API together, including refreshed country/report links. API requests and CSV downloads are relative to the page origin; no `VITE_API_BASE_URL` or separate frontend host is needed. Country outlines are bundled locally; their source is documented in `public/maps/README.md`.

@@ -14,7 +14,7 @@ python -m alembic upgrade head
 python -m uvicorn backend.app.main:app --reload
 ```
 
-API docs: `http://127.0.0.1:8000/docs`. Frontend: run `npm ci` and `npm run dev` from `frontend/` in another terminal.
+API docs: `http://127.0.0.1:8000/docs`. For production-style local use, build React with `npm --prefix frontend ci` and `npm --prefix frontend run build`, then run `bash startup.sh` from the activated Python environment. The complete app uses `http://127.0.0.1:8000`. For frontend development only, Vite can still run separately.
 
 The API supports an empty database. Data collection is a separate feature. Model status and prediction endpoints explicitly report unavailable models; no score or probability is invented.
 
