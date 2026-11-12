@@ -70,19 +70,26 @@ async def download_dataset(
     requested: list[str],
     start_year: int,
     end_year: int,
+    *,
+    fetch_countries_individually: bool = False,
 ) -> dict:
     countries = await download_countries(connector, requested)
     indicators = []
     observations = {}
-    country_filter = ";".join(requested)
+    country_filters = requested if fetch_countries_individually else [";".join(requested)]
 
     for code in INDICATORS:
         indicators.append(await download_indicator(connector, code))
-        rows, page_metadata = await connector.fetch(
-            f"country/{country_filter}/indicator/{code}",
-            date=f"{start_year}:{end_year}",
-            source="2",
-        )
+        rows = []
+        page_metadata = []
+        for country_filter in country_filters:
+            batch_rows, batch_metadata = await connector.fetch(
+                f"country/{country_filter}/indicator/{code}",
+                date=f"{start_year}:{end_year}",
+                source="2",
+            )
+            rows.extend(batch_rows)
+            page_metadata.extend(batch_metadata)
         revision = get_source_revision(page_metadata)
 
         for row in rows:

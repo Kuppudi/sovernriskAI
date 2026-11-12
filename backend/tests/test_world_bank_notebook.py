@@ -53,7 +53,7 @@ def synthetic_world_bank(request, *, changed=False, incomplete=False):
         code = path.split("/")[-1]
         first, last = map(int, request.url.params["date"].split(":"))
         rows = []
-        for country in ["USA", "IND"]:
+        for country in path.split("/")[-3].split(";"):
             for year in range(first, last + 1):
                 value = 0 if year == 2023 else 2.5
                 if code == "FP.CPI.TOTL.ZG":
@@ -161,7 +161,7 @@ def test_notebook_is_valid_and_saved_without_outputs():
 def test_files_only_ignores_invalid_database_setting(tmp_path, monkeypatch, capsys):
     monkeypatch.setenv("DATABASE_URL", "invalid://never-print-this-password")
     namespace, requests = run_notebook(tmp_path, monkeypatch)
-    assert len(requests) == 13
+    assert len(requests) == 19
     assert len(namespace["silver"]) == 24
     assert len(namespace["country_year"]) == 4
     assert len(namespace["coverage"]) == 12
@@ -171,7 +171,7 @@ def test_files_only_ignores_invalid_database_setting(tmp_path, monkeypatch, caps
     assert namespace["database_url_for_load"] is None
     assert "never-print-this-password" not in capsys.readouterr().out
     raw = json.loads(namespace["bronze_path"].read_text())
-    assert len(raw["pages"]) == 13
+    assert len(raw["pages"]) == 19
     assert "WLD" not in set(namespace["silver"]["country_iso3"])
     assert namespace["silver"]["publication_date"].isna().all()
 
@@ -310,7 +310,7 @@ def test_optional_load_reuses_extraction_and_is_idempotent(
     )
     assert first["dataset_version"] == second["dataset_version"]
     assert first["run_id"] != second["run_id"]
-    assert len(requests) == 13
+    assert len(requests) == 19
     verification_engine = create_engine(url)
     try:
         with Session(verification_engine) as db:
