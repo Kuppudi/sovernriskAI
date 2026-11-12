@@ -1,5 +1,6 @@
 """Download official records and turn them into a validated dataset."""
 
+import asyncio
 from datetime import date
 
 from ingestion.connectors.world_bank import WorldBankClient
@@ -90,6 +91,8 @@ async def download_dataset(
             )
             rows.extend(batch_rows)
             page_metadata.extend(batch_metadata)
+            if fetch_countries_individually:
+                await asyncio.sleep(1.0)
         revision = get_source_revision(page_metadata)
 
         for row in rows:
